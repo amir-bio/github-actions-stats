@@ -7970,6 +7970,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"focus-visible@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "focus-visible@npm:5.2.0"
+  checksum: 4e60302bd84accb92d11c22f8a5f6e38d2f5a0cc1bd45e708b9f00173cc700d1f0782c78f932023479074739fd588e0dd94c0e2575b2212843955e2d4398e752
+  languageName: node
+  linkType: hard
+
 "follow-redirects@npm:^1.0.0":
   version: 1.13.3
   resolution: "follow-redirects@npm:1.13.3"
@@ -8301,6 +8308,7 @@ fsevents@^1.2.7:
     "@types/node": ^14.14.35
     "@types/react": ^17.0.3
     "@types/react-dom": ^17.0.2
+    focus-visible: ^5.2.0
     framer-motion: ^4
     node: ^15.10.0
     react: ^17.0.1

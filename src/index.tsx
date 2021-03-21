@@ -19,6 +19,7 @@ import { extendTheme } from "@chakra-ui/react"
 import { WorkflowStats } from './pages/WorkflowStats'
 import { Octokit } from "@octokit/rest";
 import { useToast } from "@chakra-ui/react"
+import "focus-visible/dist/focus-visible"
 
 const colors = {
     brand: {
@@ -28,6 +29,7 @@ const colors = {
         700: "#2a69ac",
     },
 }
+
 const theme = extendTheme({colors})
 
 const tabStyle = {
@@ -51,7 +53,7 @@ const App = () => {
     const [owner, setOwner] = useState("")
     const [repo, setRepo] = useState("")
     const [workflowsList, setWorkflowsList] = useState<any>([])
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const toast = useToast()
 
     // TODO: type properly

@@ -34,6 +34,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@octokit/rest": "^18.3.5",
+    "focus-visible": "^5.2.0",
     "framer-motion": "^4",
     "node": "^15.10.0",
     "react": "^17.0.1",
