@@ -8,10 +8,16 @@ effect of changes to the pipeline, thereby helping to find which optimisations a
 
 ## 🌟 Features
 - React App to visualise and graph stats
+- List all workflows under a repo - clicking on them takes one to the analysis page of that workflow
 - List all runs for a workflow (up to last 100)
 - Histogram of the duration of successful runs along with basic stats about that workflows runs
+- Provide stats for different workflows conclusion, e.g. success, failure, cancelled, etc
 
-![Screenshot of the App](./assets/first-screenshot.png)
+Gif of current state of the app:
+![Latest GIF of the App](./assets/github-actions-stats-demo.gif)
+
+First Demo screenshot:
+![First fcreenshot of the App](./assets/first-screenshot.png)
 
 ## Development
 
@@ -27,9 +33,7 @@ Long term: cache all fetched data and only retrieve again if not already cached.
 ## 🌟 Upcoming Features
 - Use Formik for form logic
 - Hydrate form input from localstorage
-- List all workflows (future: display as cards and clicking into each will show more detailed analysis)
-- Provide number of workflows that successed, and the ones that failed (future: more detailed explanation of failed, 
-    e.g. cancelled vs failed; failed after how long?)
+- More detailed explanation of workflow conclusion e.g. failed after how long? histograms for each different conclusion
 - Provide basic stats for the given runs for a workflow, e.g. min, max, mean, 80th, 90th, 95th, 99th percentile
 - List all runs for a workflow with a variable time based start window
 - Number of workflows run per day (with possibility of filtering by a given workflow)
