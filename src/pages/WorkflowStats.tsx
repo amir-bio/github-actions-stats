@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Button, Flex, HStack, Input } from "@chakra-ui/react"
+import React, { useEffect, useState } from 'react';
+import { Box, Flex } from "@chakra-ui/react"
 import { Octokit } from "@octokit/rest";
 import { VictoryAxis, VictoryChart, VictoryHistogram, VictoryLabel, VictoryVoronoiContainer } from 'victory';
 
@@ -7,68 +7,65 @@ const octokit = new Octokit({
     auth: process.env.REACT_APP_GITHUB_TOKEN
 });
 
-export const WorkflowStats = () => {
-    // const [owner, setOwner] = useState("")
-    // const [repo, setRepo] = useState("")
-    // const [workflowName, setWorkflowName] = useState("")
+type Props = {
+    owner: string
+    repo: string
+    workflowId: number
+}
+
+export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
     const [workflowRunsStats, setWorkflowRunsStats] = useState<any>({})
 
-    // TODO: type properly
-    const handleSubmit = async (event: any) => {
-        event.preventDefault()
-        try {
-            // TODO: setup proper pagination (potentially with a request limit of 10/20 ?)
-            const {data: specificWorkflowRuns} = await octokit.actions.listWorkflowRuns({
-                owner: event.target.owner.value,
-                repo: event.target.repo.value,
-                workflow_id: event.target.workflowName.value,
-                per_page: 100,
-            })
+    useEffect(() => {
+        // TODO: setup proper pagination (potentially with a request limit of 10/20 ?)
+        octokit.actions.listWorkflowRuns({
+            owner: owner,
+            repo: repo,
+            workflow_id: workflowId,
+            per_page: 100,
+        }).then(({data: specificWorkflowRuns}) => {
+                const stats = {
+                    totalRuns: specificWorkflowRuns.total_count,
+                    conclusion: {
+                        success: 0,
+                        failure: 0,
+                        cancelled: 0,
+                        startup_failure: 0
+                    },
+                    // list of duration of runs in seconds for each conclusion
+                    durations: {
+                        success: [] as number[],
+                        failure: [] as number[],
+                        cancelled: [] as number[],
+                        startup_failure: [] as number[],
+                    },
+                    earliestRun: new Date(8640000000000000).getTime(),
+                    latestRun: new Date(-8640000000000000).getTime()
+                }
+                // only count completed runs
+                for (const run of specificWorkflowRuns.workflow_runs) {
+                    if (run.status !== "completed") continue
+                    stats.conclusion[run.conclusion] += 1
 
+                    const createdAtTime = Date.parse(run.created_at)
+                    const updatedAtTime = Date.parse(run.updated_at)
+                    const durationMs = updatedAtTime - createdAtTime
+                    stats.durations[run.conclusion].push(durationMs / 1000)
 
-            console.log(specificWorkflowRuns)
-            console.log("\n\n\n---------\n\n\n")
-            const stats = {
-                totalRuns: specificWorkflowRuns.total_count,
-                conclusion: {
-                    success: 0,
-                    failure: 0,
-                    cancelled: 0,
-                    startup_failure: 0
-                },
-                // list of duration of runs in seconds for each conclusion
-                durations: {
-                    success: [] as number[],
-                    failure: [] as number[],
-                    cancelled: [] as number[],
-                    startup_failure: [] as number[],
-                },
-                earliestRun: new Date(8640000000000000).getTime(),
-                latestRun: new Date(-8640000000000000).getTime()
+                    stats.earliestRun = Math.min(stats.earliestRun, createdAtTime)
+                    stats.latestRun = Math.max(stats.latestRun, createdAtTime)
+
+                }
+
+                console.log("stats", stats)
+                setWorkflowRunsStats(stats)
             }
-            // only count completed runs
-            for (const run of specificWorkflowRuns.workflow_runs) {
-                if (run.status !== "completed") continue
-                stats.conclusion[run.conclusion] += 1
+        ).catch(e => {
+            console.error("error while getting runs in a workflow from github", e)
 
-                const createdAtTime = Date.parse(run.created_at)
-                const updatedAtTime = Date.parse(run.updated_at)
-                const durationMs = updatedAtTime - createdAtTime
-                stats.durations[run.conclusion].push(durationMs / 1000)
+        })
+    }, [])
 
-                stats.earliestRun = Math.min(stats.earliestRun, createdAtTime)
-                stats.latestRun = Math.max(stats.latestRun, createdAtTime)
-
-            }
-
-            console.log(stats)
-
-            setWorkflowRunsStats(stats)
-        } catch (e) {
-            console.error("error while getting data from github", e)
-        }
-
-    }
     return (
         <Box display="flex"
              maxW="1840px"
@@ -77,18 +74,6 @@ export const WorkflowStats = () => {
              justifyContent="center"
              flexDirection="column"
         >
-            <Flex direction="row" justifyContent="center">
-                <form onSubmit={handleSubmit}>
-                    <HStack spacing="30px">
-                        <Input placeholder="Repo owner (organisation)" name="owner"/>
-                        <Input placeholder="Name of the repo" name="repo"/>
-                        <Input placeholder="Name of the workflow (e.g. main.yml)" name="workflowName"/>
-
-                        <Button w={350} type="submit">Visualize!</Button>
-                    </HStack>
-                </form>
-            </Flex>
-
             {workflowRunsStats?.durations?.success && workflowRunsStats?.totalRuns && (
                 <>
                     <Flex justifyContent="space-evenly" pt={10}>
@@ -112,7 +97,8 @@ export const WorkflowStats = () => {
                         width={1000}
                         height={300}
                         containerComponent={
-                            <VictoryVoronoiContainer labels={({datum}) => `${datum.y} (${datum.x} minutes)`}/>
+                            <VictoryVoronoiContainer
+                                labels={({datum}) => `${datum.y} (${(datum.x.toFixed(1))} minutes)`}/>
                         }
                     >
 
@@ -127,9 +113,9 @@ export const WorkflowStats = () => {
                         <VictoryAxis label="Time (minutes)"/>
 
                         <VictoryHistogram
-                            style={{data: {fill: "#29d05c", strokeWidth: 0}}}
-                            binSpacing={20}
-                            bins={50}
+                            style={{data: {fill: "#28a745", strokeWidth: 0}}}
+                            binSpacing={5}
+                            bins={50} // TODO: make the number of bins dynamic - perhaps a heuristic based on the number of data points?
                             // data must be in this format: [ {x: t1}, {x: t2}, ... ]
                             // also convert duration from second to minutes
                             data={
