@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Center, Flex, Spinner } from "@chakra-ui/react"
+import { Box, Center, Flex, HStack, Spinner, Tag } from "@chakra-ui/react"
 import { Octokit } from "@octokit/rest";
 import { VictoryAxis, VictoryChart, VictoryHistogram, VictoryLabel, VictoryVoronoiContainer } from 'victory';
 
@@ -68,12 +68,13 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
             setLoading(false)
             console.error("error while getting runs in a workflow from github", e)
         })
-    }, [])
+    }, [owner, repo, workflowId])
 
     return (
         <>
             {loading &&
-            (<Center pt={150}>
+            (
+                // (<Center pt={150}>
                 <Spinner
                     thickness="4px"
                     speed="0.65s"
@@ -82,7 +83,7 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
                     size="xl"
 
                 />
-            </Center>)
+            )
             }
 
             {
@@ -97,10 +98,23 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
                         <>
                             <Flex justifyContent="space-evenly" pt={10}>
                                 <Flex>Total Runs: {workflowRunsStats.totalRuns}</Flex>
-                                <Flex>{workflowRunsStats.conclusion.success} Successes </Flex>
-                                <Flex>{workflowRunsStats.conclusion.failure} Failures</Flex>
-                                <Flex>{workflowRunsStats.conclusion.cancelled} Cancelled </Flex>
-                                <Flex>{workflowRunsStats.conclusion.startup_failure} Start up failure</Flex>
+
+                                <HStack spacing={4}>
+                                    <Tag size="lg" borderRadius="full" colorScheme="green">
+                                        {workflowRunsStats.conclusion.success} Successes
+                                    </Tag>
+                                    <Tag size="lg" borderRadius="full" colorScheme="red">
+                                        {workflowRunsStats.conclusion.failure} Failures
+                                    </Tag>
+                                    <Tag size="lg" borderRadius="full" colorScheme="yellow">
+                                        {workflowRunsStats.conclusion.cancelled} Cancelled
+                                    </Tag>
+                                    <Tag size="lg" borderRadius="full" colorScheme="facebook">
+                                        {workflowRunsStats.conclusion.startup_failure} Startup Failures
+                                    </Tag>
+
+                                </HStack>
+
 
                             </Flex>
                             <br/>
