@@ -5,7 +5,9 @@
   "repository": "git@github.com:amirha97/github-actions-stats.git",
   "author": "Amirhossein Andohkosh <4315615+amirha97@users.noreply.github.com>",
   "license": "UNLICENSED",
-  "type": "module",
+  "scripts": {
+    "execute": "ts-node index.ts"
+  },
   "dependencies": {
     "@octokit/rest": "^18.3.5",
     "typescript": "^4.2.3"
