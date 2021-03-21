@@ -29,10 +29,7 @@ const App = () => {
     const handleSubmit = async (event: any) => {
         event.preventDefault()
         try {
-
-
-            console.log("event.target", event.target)
-            console.log("event.target.owner", event.target.owner.value)
+            // TODO: setup proper pagination (potentially with a request limit of 10/20 ?)
             const {data: specificWorkflowRuns} = await octokit.actions.listWorkflowRuns({
                 owner: event.target.owner.value,
                 repo: event.target.repo.value,
@@ -101,9 +98,9 @@ const App = () => {
 
                         <Button type="submit" w={80}>Visualize!</Button>
                     </HStack>
-
                 </form>
             </Flex>
+
             {workflowRunsStats?.durations?.success && workflowRunsStats?.totalRuns && (
                 <Flex>
 
@@ -126,9 +123,7 @@ const App = () => {
                         width={1000}
                         height={300}
                         containerComponent={
-                            <VictoryVoronoiContainer
-                                labels={({datum}) => `${datum.y} (${datum.x} minutes)`}
-                            />
+                            <VictoryVoronoiContainer labels={({datum}) => `${datum.y} (${datum.x} minutes)`}/>
                         }
                     >
 
@@ -139,33 +134,25 @@ const App = () => {
                             text="Duration of successful runs"
                         />
 
-                        <VictoryAxis
-                            dependentAxis
-                            label="Total number of runs"
-                        />
-
-                        <VictoryAxis
-                            label="Time (minutes)"
-                        />
+                        <VictoryAxis dependentAxis label="Total number of runs"/>
+                        <VictoryAxis label="Time (minutes)"/>
 
                         <VictoryHistogram
                             style={{data: {fill: "#29d05c"}}}
                             binSpacing={20}
                             bins={50}
                             // data must be in this format: [ {x: t1}, {x: t2}, ... ]
-                            // also convert second duration to minutes
+                            // also convert duration from second to minutes
                             data={
                                 workflowRunsStats.durations.success.map(successDuration => ({
                                     x: successDuration / 60
                                 }))
 
                             }
-
                         />
                     </VictoryChart>
                 )}
             </Flex>
-
         </Box>
     )
 }
