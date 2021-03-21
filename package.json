@@ -1,0 +1,8 @@
+{
+  "name": "github-actions-stats",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:amirha97/github-actions-stats.git",
+  "author": "Amirhossein Andohkosh <4315615+amirha97@users.noreply.github.com>",
+  "license": "UNLICENSED"
+}
