@@ -4,5 +4,13 @@
   "main": "index.js",
   "repository": "git@github.com:amirha97/github-actions-stats.git",
   "author": "Amirhossein Andohkosh <4315615+amirha97@users.noreply.github.com>",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "@octokit/rest": "^18.3.5",
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1"
+  }
 }
