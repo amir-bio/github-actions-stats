@@ -83,20 +83,20 @@ const App = () => {
     }
     return (
         <Box display="flex"
-             maxW="1440px"
+             maxW="1840px"
              mx="auto"
              pt={50}
-             justifyContent={"center"}
+             justifyContent="center"
              flexDirection="column"
         >
-            <Flex direction="row">
+            <Flex direction="row" justifyContent="center">
                 <form onSubmit={handleSubmit}>
                     <HStack spacing="30px">
                         <Input placeholder="Repo owner (organisation)" name="owner"/>
                         <Input placeholder="Name of the repo" name="repo"/>
                         <Input placeholder="Name of the workflow (e.g. main.yml)" name="workflowName"/>
 
-                        <Button type="submit" w={80}>Visualize!</Button>
+                        <Button w={350} type="submit">Visualize!</Button>
                     </HStack>
                 </form>
             </Flex>
