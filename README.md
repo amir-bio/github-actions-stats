@@ -11,6 +11,8 @@ effect of changes to the pipeline, thereby helping to find which optimisations a
 - List all runs for a workflow (up to last 100)
 - Histogram of the duration of successful runs along with basic stats about that workflows runs
 
+![Screenshot of the App](./assets/first-screenshot.png)
+
 ## Development
 
 Create a .env file at the root with `REACT_APP_GITHUB_TOKEN` env var. Its value should be a 
