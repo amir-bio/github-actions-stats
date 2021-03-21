@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Center, Flex, HStack, Spinner, Tag } from "@chakra-ui/react"
 import { Octokit } from "@octokit/rest";
-import { VictoryAxis, VictoryChart, VictoryHistogram, VictoryLabel, VictoryVoronoiContainer } from 'victory';
+import {
+    VictoryAxis,
+    VictoryChart,
+    VictoryHistogram,
+    VictoryLabel,
+    VictoryTooltip,
+    VictoryVoronoiContainer
+} from 'victory';
 
 const octokit = new Octokit({
     auth: process.env.REACT_APP_GITHUB_TOKEN
@@ -74,15 +81,16 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
         <>
             {loading &&
             (
-                // (<Center pt={150}>
-                <Spinner
-                    thickness="4px"
-                    speed="0.65s"
-                    emptyColor="gray.200"
-                    color="blue.500"
-                    size="xl"
+                <Center pt={150}>
+                    <Spinner
+                        thickness="4px"
+                        speed="0.65s"
+                        emptyColor="gray.200"
+                        color="blue.500"
+                        size="xl"
 
-                />
+                    />
+                </Center>
             )
             }
 
@@ -130,8 +138,11 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
                                 height={300}
                                 containerComponent={
                                     <VictoryVoronoiContainer
-                                        labels={({datum}) => `${datum.y} (${(datum.x.toFixed(1))} minutes)`}/>
-                                }
+                                        labels={({datum}) => `${datum.y} (${(datum.x.toFixed(1))} minutes)`}
+                                        labelComponent={<VictoryTooltip cornerRadius={3}
+                                                                        flyoutStyle={{fill: "white", stroke: "#999"}}/>}
+                                    />}
+
                             >
 
                                 <VictoryLabel
