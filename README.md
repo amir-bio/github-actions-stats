@@ -1,4 +1,4 @@
-# Github Actions Stats
+# Github Actions Stat Visualiser
 
 Statistics for your Github Actions to help analyse and optimise your workflows.
 
