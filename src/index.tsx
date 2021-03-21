@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
     Box, Button,
+    Center,
     ChakraProvider,
     Flex,
     Grid,
     GridItem,
     HStack, Input,
+    Spinner,
     Tab,
     TabList,
     TabPanel,
@@ -16,6 +18,7 @@ import {
 import { extendTheme } from "@chakra-ui/react"
 import { WorkflowStats } from './pages/WorkflowStats'
 import { Octokit } from "@octokit/rest";
+import { useToast } from "@chakra-ui/react"
 
 const colors = {
     brand: {
@@ -48,11 +51,14 @@ const App = () => {
     const [owner, setOwner] = useState("")
     const [repo, setRepo] = useState("")
     const [workflowsList, setWorkflowsList] = useState<any>([])
+    const [loading, setLoading] = useState(true)
+    const toast = useToast()
 
     // TODO: type properly
     const handleSubmit = async (event: any) => {
         event.preventDefault()
         try {
+            setLoading(true)
             const {data} = await octokit.actions.listRepoWorkflows({
                 owner: event.target.owner.value,
                 repo: event.target.repo.value,
@@ -62,6 +68,15 @@ const App = () => {
             setWorkflowsList(data.workflows)
         } catch (e) {
             console.error("error while getting list of repo workflows from github", e)
+            toast({
+                title: "Retrieval of workflows list failed.",
+                description: e.toString(),
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -86,42 +101,55 @@ const App = () => {
                     </form>
                 </Flex>
 
-                <Tabs isLazy orientation="vertical" variant={"solid-rounded"} align={"center"}
-                      sx={{textAlign: "left"}}>
-                    <Grid
-                        h="200px"
-                        templateRows="repeat(2, 1fr)"
-                        templateColumns="repeat(5, 1fr)"
-                        gap={4}
-                    >
+                {loading &&
+                <Center pt={150}>
+                  <Spinner
+                    thickness="4px"
+                    speed="0.65s"
+                    emptyColor="gray.200"
+                    color="blue.500"
+                    size="xl"
 
-                        <GridItem colSpan={1}>
-                            <TabList>
-                                {!!workflowsList && workflowsList.map(workflow => (
-                                    <Tab
-                                        sx={tabStyle}
-                                        _hover={{bg: "gray.100", color: "gray.600"}}
-                                        _selected={selectedTabStyle}
-                                    >
-                                        {workflow.name}
-                                    </Tab>
-                                ))}
+                  />
+                </Center>}
 
-                            </TabList>
-                        </GridItem>
-                        <GridItem colSpan={3}>
-                            <TabPanels>
-                                {!!workflowsList && workflowsList.map(workflow => (
-                                    <TabPanel>
-                                        <WorkflowStats workflowId={workflow.id} owner={owner} repo={repo}/>
-                                    </TabPanel>
-                                ))}
-                            </TabPanels>
+                {!loading && !!workflowsList &&
 
-                        </GridItem>
+                (<Tabs isLazy orientation="vertical" variant={"solid-rounded"} align={"center"}
+                       sx={{textAlign: "left"}}>
+                        <Grid
+                            templateRows="repeat(2, 1fr)"
+                            templateColumns="repeat(5, 1fr)"
+                            gap={4}
+                        >
 
-                    </Grid>
-                </Tabs>
+                            <GridItem colSpan={1}>
+                                <TabList>
+                                    {workflowsList.map(workflow => (
+                                        <Tab
+                                            sx={tabStyle}
+                                            _hover={{bg: "gray.100", color: "gray.600"}}
+                                            _selected={selectedTabStyle}
+                                        >
+                                            {workflow.name}
+                                        </Tab>
+                                    ))}
+
+                                </TabList>
+                            </GridItem>
+                            <GridItem colSpan={3}>
+                                <TabPanels>
+                                    {workflowsList.map(workflow => (
+                                        <TabPanel>
+                                            <WorkflowStats workflowId={workflow.id} owner={owner} repo={repo}/>
+                                        </TabPanel>
+                                    ))}
+                                </TabPanels>
+
+                            </GridItem>
+                        </Grid>
+                    </Tabs>
+                )}
             </Box>
         </>
     )
