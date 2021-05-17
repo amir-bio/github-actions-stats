@@ -16,8 +16,8 @@ effect of changes to the pipeline, thereby helping to find which optimisations a
 Gif of current state of the app:
 ![Latest GIF of the App](./assets/github-actions-stats-demo.gif)
 
-First Demo screenshot:
-![First fcreenshot of the App](./assets/first-screenshot.png)
+Screenshot:
+![Screenshot of the App](./assets/second-screenshot.png)
 
 ## Development
 
