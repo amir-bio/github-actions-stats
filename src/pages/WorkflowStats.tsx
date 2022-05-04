@@ -55,7 +55,7 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
                 }
                 // only count completed runs
                 for (const run of specificWorkflowRuns.workflow_runs) {
-                    if (run.status !== "completed") continue
+                    if (!run.conclusion || run.status !== "completed") continue
                     stats.conclusion[run.conclusion] += 1
 
                     const createdAtTime = Date.parse(run.created_at)
