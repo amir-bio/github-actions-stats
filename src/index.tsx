@@ -68,7 +68,7 @@ const App = () => {
             setOwner(event.target.owner.value)
             setRepo(event.target.repo.value)
             setWorkflowsList(data.workflows)
-        } catch (e) {
+        } catch (e: any) {
             console.error("error while getting list of repo workflows from github", e)
             toast({
                 title: "Retrieval of workflows list failed.",
