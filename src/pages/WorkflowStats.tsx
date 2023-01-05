@@ -28,33 +28,43 @@ export const WorkflowStats = ({owner, repo, workflowId}: Props) => {
         // TODO: setup proper pagination (potentially with a request limit of 10/20 ?)
         setWorkflowRunsStats({})
         setLoading(true)
-        octokit.actions.listWorkflowRuns({
+
+        const max = 200;
+        const stats = {
+            totalRuns: 0,
+            runs: 0,
+            conclusion: {
+                success: 0,
+                failure: 0,
+                cancelled: 0,
+                startup_failure: 0
+            },
+            // list of duration of runs in seconds for each conclusion
+            durations: {
+                success: [] as number[],
+                failure: [] as number[],
+                cancelled: [] as number[],
+                startup_failure: [] as number[],
+            },
+            earliestRun: new Date(8640000000000000).getTime(),
+            latestRun: new Date(-8640000000000000).getTime()
+        };
+
+        octokit.paginate(octokit.actions.listWorkflowRuns, {
             owner: owner,
             repo: repo,
             workflow_id: workflowId,
             per_page: 100,
-        }).then(({data: specificWorkflowRuns}) => {
-
-                const stats = {
-                    totalRuns: specificWorkflowRuns.total_count,
-                    conclusion: {
-                        success: 0,
-                        failure: 0,
-                        cancelled: 0,
-                        startup_failure: 0
-                    },
-                    // list of duration of runs in seconds for each conclusion
-                    durations: {
-                        success: [] as number[],
-                        failure: [] as number[],
-                        cancelled: [] as number[],
-                        startup_failure: [] as number[],
-                    },
-                    earliestRun: new Date(8640000000000000).getTime(),
-                    latestRun: new Date(-8640000000000000).getTime()
-                }
+        }, ({ data }, done) => {
+            stats.totalRuns = data.total_count;
+            stats.runs += data.length;
+            if (stats.runs >= max) {
+                done();
+            }
+            return data;
+        }).then((specificWorkflowRuns) => {
                 // only count completed runs
-                for (const run of specificWorkflowRuns.workflow_runs) {
+                for (const run of specificWorkflowRuns) {
                     if (!run.conclusion || run.status !== "completed") continue
                     stats.conclusion[run.conclusion] += 1
 
